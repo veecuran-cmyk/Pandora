@@ -557,24 +557,21 @@
         } else {
           url = `https://www.youtube.com/results?search_query=${q}`;
         }
-      } else if (engine === 'tiktok') {
+      }else if (engine === 'tiktok') {
+    const q = encodeURIComponent(rawQuery);
 
-    if (rawQuery.includes('tiktok.com')) {
-        window.open(rawQuery, '_blank');
-        return;
-    }
+    // Abre como hashtag no próprio TikTok (melhor tentativa)
+    const tagUrl = `https://www.tiktok.com/tag/${q}`;
+    const win = window.open(tagUrl, "_blank");
 
-    const tiktokUrl = `https://www.tiktok.com/search?q=${q}`;
-
-    // Tentativa principal
-    const win = window.open(tiktokUrl, '_blank');
-
-    // Se bloquear, usa fallback
-    if (!win) {
-        window.open(`https://www.google.com/search?q=${q}+site:tiktok.com`, '_blank');
-    }
-}
-      window.open(url, '_blank');
+    // Fallback garantido caso o TikTok bloqueie a abertura da busca
+    setTimeout(() => {
+        if (!win || win.closed) {
+            window.open(`https://www.google.com/search?q=${q}+site:tiktok.com`, "_blank");
+        }
+    }, 800);
+      }
+      
     }
 
     function searchBook() {
