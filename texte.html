@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=UTF-8">
+  <title>Pandora</title>
+  <style>
+    :root {
+      --c-red-light: #ffebf3; --c-red-accent: #ff005c; --c-red-text: #8c0032;
+      --c-orange-light: #fff5e0; --c-orange-accent: #ff9100; --c-orange-text: #b36400;
+      --c-yellow-light: #fffceb; --c-yellow-accent: #ffd400; --c-yellow-text: #b39700;
+      --c-green-light: #ebfff0; --c-green-accent: #00cc66; --c-green-text: #008040;
+      --c-blue-light: #defdff; --c-blue-accent: #38d7ff; --c-blue-text: #1d7e99;
+      --c-indigo-light: #e5ebff; --c-indigo-accent: #5983ff; --c-indigo-text: #2c4280;
+      --c-violet-light: #f5ebff; --c-violet-accent: #a338ff; --c-violet-text: #591f80;
+      
+      --d-red-dark: #33000f; --d-red-accent: #ff4d99; --d-red-text: #ffb3d9;
+      --d-orange-dark: #331e00; --d-orange-accent: #ffb34d; --d-orange-text: #ffe0b3;
+      --d-yellow-dark: #332b00; --d-yellow-accent: #ffe873; --d-yellow-text: #fff8e0;
+      --d-green-dark: #002613; --d-green-accent: #66ff99; --d-green-text: #e0fff0;
+      --d-blue-dark: #00181a; --d-blue-accent: #5cf6ff; --d-blue-text: #c0f9ff;
+      --d-indigo-dark: #0f0033; --d-indigo-accent: #8c8cff; --d-indigo-text: #e0e0ff;
+      --d-violet-dark: #1a0033; --d-violet-accent: #c466ff; --d-violet-text: #f0e0ff;
+    }
+
+    :root {
+      --bg-color: var(--c-blue-light);
+      --text-color: var(--c-blue-text);
+      --accent-color: var(--c-blue-accent);
+      --input-bg-color: #c7f8ff;
+      --input-border-color: #26b3ff;
+      --input-focus-shadow: rgba(50, 90, 168);
+      --modal-bg-color: rgba(255, 255, 255, 0.9);
+      --modal-content-bg: #fff;
+    }
+
+    .theme-dark {
+      --bg-color: var(--d-blue-dark);
+      --text-color: var(--d-blue-text);
+      --accent-color: var(--d-blue-accent);
+      --input-bg-color: #1a3335;
+      --input-border-color: #5cf6ff;
+      --input-focus-shadow: rgba(50, 90, 168, 0.7);
+      --modal-bg-color: rgba(0, 0, 0, 0.9);
+      --modal-content-bg: #1a1a1a;
+    }
+
+    .color-red { --bg-color: var(--c-red-light); --accent-color: var(--c-red-accent); --text-color: var(--c-red-text); }
+    .color-orange { --bg-color: var(--c-orange-light); --accent-color: var(--c-orange-accent); --text-color: var(--c-orange-text); }
+    .color-yellow { --bg-color: var(--c-yellow-light); --accent-color: var(--c-yellow-accent); --text-color: var(--c-yellow-text); }
+    .color-green { --bg-color: var(--c-green-light); --accent-color: var(--c-green-accent); --text-color: var(--c-green-text); }
+    .color-blue { --bg-color: var(--c-blue-light); --accent-color: var(--c-blue-accent); --text-color: var(--c-blue-text); }
+    .color-indigo { --bg-color: var(--c-indigo-light); --accent-color: var(--c-indigo-accent); --text-color: var(--c-indigo-text); }
+    .color-violet { --bg-color: var(--c-violet-light); --accent-color: var(--c-violet-accent); --text-color: var(--c-violet-text); }
+
+    .theme-dark.color-red { --bg-color: var(--d-red-dark); --accent-color: var(--d-red-accent); --text-color: var(--d-red-text); }
+    .theme-dark.color-orange { --bg-color: var(--d-orange-dark); --accent-color: var(--d-orange-accent); --text-color: var(--d-orange-text); }
+    .theme-dark.color-yellow { --bg-color: var(--d-yellow-dark); --accent-color: var(--d-yellow-accent); --text-color: var(--d-yellow-text); }
+    .theme-dark.color-green { --bg-color: var(--d-green-dark); --accent-color: var(--d-green-accent); --text-color: var(--d-green-text); }
+    .theme-dark.color-blue { --bg-color: var(--d-blue-dark); --accent-color: var(--d-blue-accent); --text-color: var(--d-blue-text); }
+    .theme-dark.color-indigo { --bg-color: var(--d-indigo-dark); --accent-color: var(--d-indigo-accent); --text-color: var(--d-indigo-text); }
+    .theme-dark.color-violet { --bg-color: var(--d-violet-dark); --accent-color: var(--d-violet-accent); --text-color: var(--d-violet-text); }
+
+    @keyframes piscar {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    body{
+      font-family: 'Courier New', Courier, monospace;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-size:23px;
+      transition: background-color 0.5s, color 0.5s;
+      margin: 0;
+      min-height: 100vh;
+      box-sizing: border-box;
+      position: relative;
+      padding-top: 0;
+    }
+    .titulo {
+      animation: piscar 4s linear infinite;
+      font-weight: bold;
+      color: var(--accent-color);
+      margin-top: 50px;
+    }
+    input[type="text"], textarea, select, input[type="date"], input[type="number"] {
+      display: block;
+      margin: 10px auto; 
+      padding: 10px;
+      border: 2px solid var(--input-border-color);
+      border-radius: 12px;
+      background-color: var(--input-bg-color);
+      color: var(--text-color);
+      transition: 0.5s;
+      transform-origin: center;
+      font-family:'Courier New', Courier, monospace;
+      font-size:18px;
+      width: 80%;
+      max-width: 300px;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline:none;
+      border-color: var(--accent-color);
+      box-shadow:0 0 5px var(--input-focus-shadow);
+      transform: scale(0.98);
+      box-shadow: 0 2px 0 var(--accent-color);
+    }
+    textarea {
+        resize: vertical;
+        height: 150px;
+    }
+
+    button {
+      padding: 8px 15px;
+      border: 1px solid var(--accent-color);
+      border-radius: 6px;
+      background-color: var(--input-bg-color);
+      color: var(--text-color);
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s, border-color 0.3s;
+      font-family:'Courier New', Courier, monospace;
+      margin: 5px;
+    }
+    button:hover {
+      background-color: var(--accent-color);
+      color: var(--bg-color);
+      transform: translateY(-2px);
+    }
+
+    #open-modal-button {
+      position: absolute;
+      top: -35px;
+      right: 5px;
+      padding: 4px 6px;
+      font-size: 14px;
+      cursor: pointer;
+      background-color: var(--input-bg-color);
+      border: 1px solid var(--accent-color);
+      border-radius: 4px;
+      color: var(--text-color);
+      z-index: 2000; 
+      transition: background-color 0.3s;
+    }
+    #open-modal-button:hover {
+        background-color: var(--accent-color);
+        color: var(--bg-color);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: var(--modal-bg-color);
+    }
+
+    .modal-content {
+      background-color: var(--modal-content-bg);
+      margin: 5% auto;
+      padding: 20px;
+      border: 2px solid var(--accent-color);
+      width: 90%;
+      max-width: 500px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      color: var(--text-color);
+      text-align: center;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .close-button {
+      color: var(--text-color);
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .close-button:hover {
+      color: var(--accent-color);
+    }
+
+    .theme-controls, .game-menu, .project-list, .agenda-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .color-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .color-button {
+      font-size: 20px;
+      padding: 10px;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .color-button.active {
+      border: 3px solid var(--accent-color);
+      box-shadow: 0 0 8px var(--accent-color);
+      transform: scale(1.1);
+    }
+
+    .game-board {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 5px;
+        margin: 20px auto;
+        width: 200px;
+    }
+    .tictac-cell {
+        width: 60px;
+        height: 60px;
+        border: 2px solid var(--accent-color);
+        font-size: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .project-item, .agenda-item {
+        border: 1px solid var(--accent-color);
+        padding: 10px;
+        width: 90%;
+        border-radius: 5px;
+        text-align: left;
+        margin-bottom: 5px;
+    }
+    .hidden { display: none; }
+    
+    .sos-number {
+        font-size: 24px;
+        font-weight: bold;
+        margin: 10px 0;
+        color: var(--accent-color);
+    }
+
+  </style>
+</head>
+<body class="theme-light color-blue">
+  
+  <button id="open-modal-button">☀️/🌙</button>
+
+  <h1 class="titulo">
+    <center>
+      bem-vindo!:)
+    </center>
+  </h1>
+  <input type="text" id="main-input" placeholder="Insira seu comando...">
+  <div style="text-align: center; font-size: 14px; opacity: 0.7; margin-top: 5px;">digite /help para ver comandos</div>
+
+  <div id="modal-theme" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-theme')">&times;</span>
+      <h2>Configurações</h2>
+      <div class="theme-controls">
+        <button id="theme-toggle">Alternar Modo (Claro/Escuro)</button>
+        <h3>Cor Base:</h3>
+        <div class="color-options">
+          <button class="color-button" data-color="red">🔴</button>
+          <button class="color-button" data-color="orange">🟠</button>
+          <button class="color-button" data-color="yellow">🟡</button>
+          <button class="color-button" data-color="green">🟢</button>
+          <button class="color-button" data-color="blue">🔵</button>
+          <button class="color-button" data-color="indigo">🟣</button>
+          <button class="color-button" data-color="violet">💜</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-help" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-help')">&times;</span>
+      <h2>Comandos</h2>
+      <ul style="text-align: left; list-style: none;">
+        <li><strong>/note</strong> - Diário e notas</li>
+        <li><strong>/pesq</strong> - Pesquisa (Google/YT/TikTok)</li>
+        <li><strong>/game</strong> - Jogos (Velha, Adivinha, Forca)</li>
+        <li><strong>/ag</strong> - Agenda</li>
+        <li><strong>/book</strong> - Buscar livros (Drive)</li>
+        <li><strong>/sos</strong> - Números de emergência</li>
+        <li><strong>/music</strong> - Player de música</li>
+        <li><strong>/hist</strong> - Criar história</li>
+        <li><strong>/proj</strong> - Gestão de projetos</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="modal-note" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-note')">&times;</span>
+      <h2>Diário</h2>
+      <input type="text" id="note-title" placeholder="Título">
+      <input type="date" id="note-date">
+      <textarea id="note-content" placeholder="Escreva aqui..."></textarea>
+      <button onclick="saveNote()">Baixar Nota (.txt)</button>
+    </div>
+  </div>
+
+  <div id="modal-pesq" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-pesq')">&times;</span>
+      <h2>Pesquisar</h2>
+      <select id="search-engine">
+        <option value="google">Google</option>
+        <option value="youtube">YouTube</option>
+        <option value="tiktok">TikTok</option>
+      </select>
+      <input type="text" id="search-query" placeholder="O que procura?">
+      <button onclick="performSearch()">Ir</button>
+    </div>
+  </div>
+
+  <div id="modal-game" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-game')">&times;</span>
+      <h2>Arcade</h2>
+      <div id="game-menu" class="game-menu">
+        <button onclick="loadGame('velha')">Jogo da Velha</button>
+        <button onclick="loadGame('adivinha')">Adivinhe o Número</button>
+        <button onclick="loadGame('forca')">Jogo da Forca</button>
+        <div style="margin-top: 10px;">
+           <label>Rodadas:</label>
+           <input type="number" id="game-rounds" value="1" min="1" max="10" style="width: 50px; display: inline-block;">
+        </div>
+      </div>
+      
+      <div id="game-velha" class="hidden">
+        <h3>Jogo da Velha</h3>
+        <div id="tictac-board" class="game-board"></div>
+        <p id="tictac-status"></p>
+        <button onclick="resetTicTacToe()">Reiniciar</button>
+        <button onclick="backToGameMenu()">Voltar</button>
+      </div>
+
+      <div id="game-adivinha" class="hidden">
+        <h3>Adivinhe (1-100)</h3>
+        <input type="number" id="guess-input" placeholder="Seu palpite">
+        <button onclick="checkGuess()">Chutar</button>
+        <p id="guess-status"></p>
+        <button onclick="backToGameMenu()">Voltar</button>
+      </div>
+
+      <div id="game-forca" class="hidden">
+        <h3>Forca</h3>
+        <p id="hangman-word" style="font-size: 24px; letter-spacing: 5px;"></p>
+        <input type="text" id="hangman-input" maxlength="1" placeholder="Letra" style="width: 50px;">
+        <button onclick="guessLetter()">Tentar</button>
+        <p id="hangman-status"></p>
+        <button onclick="backToGameMenu()">Voltar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal-ag" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-ag')">&times;</span>
+      <h2>Agenda</h2>
+      <input type="text" id="agenda-input" placeholder="Nova tarefa...">
+      <button onclick="addAgendaItem()">Adicionar</button>
+      <div id="agenda-list" class="agenda-list"></div>
+      <button onclick="clearAgenda()" style="margin-top:20px; font-size:12px">Limpar Tudo</button>
+    </div>
+  </div>
+
+  <div id="modal-book" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-book')">&times;</span>
+      <h2>Biblioteca Drive</h2>
+      <input type="text" id="book-query" placeholder="Nome do livro ou autor">
+      <button onclick="searchBook()">Buscar no Drive</button>
+    </div>
+  </div>
+
+  <div id="modal-sos" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-sos')">&times;</span>
+      <h2>Emergência</h2>
+      <div class="sos-number">190 - Polícia</div>
+      <div class="sos-number">192 - SAMU</div>
+      <div class="sos-number">193 - Bombeiros</div>
+      <div class="sos-number">180 - Mulher</div>
+    </div>
+  </div>
+
+  <div id="modal-music" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-music')">&times;</span>
+      <h2>Music Player</h2>
+      <input type="text" id="music-url" placeholder="Link YouTube ou MP3 (ou digite termo para buscar)">
+      <button onclick="playMusic()">Tocar</button>
+      <div id="player-container" style="margin-top: 20px;"></div>
+    </div>
+  </div>
+
+  <div id="modal-hist" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-hist')">&times;</span>
+      <h2>Criador de Histórias</h2>
+      <input type="text" id="hist-title" placeholder="Título da História">
+      <textarea id="hist-content" placeholder="Era uma vez..." style="height: 300px;"></textarea>
+      <button onclick="saveHistory()">Salvar História (.txt)</button>
+    </div>
+  </div>
+
+  <div id="modal-proj" class="modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeModal('modal-proj')">&times;</span>
+      <h2>Meus Projetos</h2>
+      <input type="text" id="proj-name" placeholder="Nome do Projeto">
+      <textarea id="proj-desc" placeholder="Descrição do projeto..." style="height: 100px;"></textarea>
+      <button onclick="addProject()">Salvar Projeto</button>
+      <hr style="border-color: var(--accent-color); width: 100%;">
+      <h3>Lista de Projetos</h3>
+      <div id="project-list" class="project-list"></div>
+      <button onclick="clearProjects()" style="margin-top:20px; font-size:12px">Apagar Todos</button>
+    </div>
+  </div>
+
+  <script>
+    const body = document.body;
+    const openModalButton = document.getElementById('open-modal-button');
+    const themeToggle = document.getElementById('theme-toggle');
+    const colorButtons = document.querySelectorAll('.color-button');
+    const mainInput = document.getElementById('main-input');
+
+    // === Sistema de Tema ===
+    function updateActiveColorButton(selectedColor) {
+      colorButtons.forEach(button => button.classList.remove('active'));
+      const activeBtn = document.querySelector(`.color-button[data-color="${selectedColor}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    function changeColor(color) {
+      body.className.split(' ').forEach(cls => {
+        if(cls.startsWith('color-')) body.classList.remove(cls);
+      });
+      body.classList.add(`color-${color}`);
+      updateActiveColorButton(color);
+    }
+
+    function updateThemeToggleText() {
+      themeToggle.textContent = body.classList.contains('theme-light') ? 'Alternar Modo (Claro/Escuro)' : 'Alternar Modo (Escuro/Claro)';
+    }
+
+    openModalButton.addEventListener('click', () => openModal('modal-theme'));
+
+    themeToggle.addEventListener('click', () => {
+      if (body.classList.contains('theme-light')) {
+        body.classList.remove('theme-light');
+        body.classList.add('theme-dark');
+      } else {
+        body.classList.remove('theme-dark');
+        body.classList.add('theme-light');
+      }
+      updateThemeToggleText();
+    });
+
+    colorButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        changeColor(button.getAttribute('data-color'));
+      });
+    });
+
+    // === Sistema de Modais Geral ===
+    function openModal(id) {
+      document.getElementById(id).style.display = 'block';
+    }
+    
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+      if(id === 'modal-game') backToGameMenu(); // Reseta estado do jogo ao fechar
+    }
+
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal')) {
+        event.target.style.display = "none";
+      }
+    }
+
+    // === Interpretador de Comandos ===
+    mainInput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        const command = mainInput.value.trim().toLowerCase();
+        mainInput.value = ''; 
+        
+        switch(command) {
+          case '/note': openModal('modal-note'); break;
+          case '/pesq': openModal('modal-pesq'); break;
+          case '/game': openModal('modal-game'); break;
+          case '/ag':   renderAgenda(); openModal('modal-ag'); break;
+          case '/book': openModal('modal-book'); break;
+          case '/sos':  openModal('modal-sos'); break;
+          case '/music': openModal('modal-music'); break;
+          case '/hist': openModal('modal-hist'); break;
+          case '/proj': renderProjects(); openModal('modal-proj'); break;
+          case '/help': openModal('modal-help'); break;
+          default: alert('Comando desconhecido. Tente /help');
+        }
+      }
+    });
+
+    // === Funcionalidade: Note & Hist (Download TXT) ===
+    function downloadTxt(filename, content) {
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));
+      element.setAttribute('download', filename);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+
+    function saveNote() {
+      const title = document.getElementById('note-title').value || 'Nota Sem Título';
+      const date = document.getElementById('note-date').value;
+      const content = document.getElementById('note-content').value;
+      const fullText = `TÍTULO: ${title}\nDATA: ${date}\n\n${content}`;
+      downloadTxt(`${title}.txt`, fullText);
+    }
+
+    function saveHistory() {
+      const title = document.getElementById('hist-title').value || 'História';
+      const content = document.getElementById('hist-content').value;
+      downloadTxt(`${title}.txt`, content);
+    }
+
+    // === Funcionalidade: Pesquisa & Book ===
+    function performSearch() {
+      const engine = document.getElementById('search-engine').value;
+      const rawQuery = document.getElementById('search-query').value.trim();
+      if (!rawQuery) {
+        alert('Digite algo para pesquisar.');
+        return;
+      }
+      const q = encodeURIComponent(rawQuery);
+      let url = '';
+      if (engine === 'google') {
+        url = `https://www.google.com/search?q=${q}`;
+      } else if (engine === 'youtube') {
+        // se o user colou um link do YouTube, abre direto
+        if (rawQuery.includes('youtube.com') || rawQuery.includes('youtu.be')) {
+          url = rawQuery;
+        } else {
+          url = `https://www.youtube.com/results?search_query=${q}`;
+        }
+      } else if (engine === 'tiktok') {
+
+    if (rawQuery.includes('tiktok.com')) {
+        window.open(rawQuery, '_blank');
+        return;
+    }
+
+    const tiktokUrl = `https://www.tiktok.com/search?q=${q}`;
+
+    // Tentativa principal
+    const win = window.open(tiktokUrl, '_blank');
+
+    // Se bloquear, usa fallback
+    if (!win) {
+        window.open(`https://www.google.com/search?q=${q}+site:tiktok.com`, '_blank');
+    }
+}
+      window.open(url, '_blank');
+    }
+
+    function searchBook() {
+    const query = document.getElementById('book-query').value.trim();
+    if (!query) {
+        alert('Digite o nome do livro ou autor para buscar.');
+        return;
+    }
+    const q = encodeURIComponent(query);
+    const url = `https://www.google.com/search?q=(site:drive.google.com+OR+filetype:pdf)+${q}`;
+    window.open(url, '_blank');
+}
+
+
+    // === Funcionalidade: Music ===
+   function playMusic() {
+    const input = document.getElementById('music-url').value.trim();
+    const container = document.getElementById('player-container');
+    container.innerHTML = '';
+
+    if (!input) {
+        alert('Digite um link ou nome da música.');
+        return;
+    }
+
+    let url = input;
+
+    // Adiciona http:// se o user não colocou
+    if (!url.startsWith("http")) {
+        url = "https://" + url;
+    }
+
+    // === 1. Detectar YouTube ===
+    const ytRegex = /(?:v=|\/)([0-9A-Za-z_-]{11})/;
+    let videoId = null;
+
+    if (url.includes("youtu")) {
+        // tenta extrair ID
+        try {
+            const obj = new URL(url);
+            videoId = obj.searchParams.get("v");
+        } catch {}
+
+        if (!videoId) {
+            const m = url.match(ytRegex);
+            if (m) videoId = m[1];
+        }
+
+        // embed final
+        if (videoId) {
+            container.innerHTML =
+                `<iframe width="100%" height="220" 
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+                    frameborder="0" allow="autoplay"
+                    allowfullscreen>
+                 </iframe>`;
+            return;
+        }
+    }
+
+    // === 2. MP3 direto ===
+    if (url.endsWith(".mp3") || url.endsWith(".wav") || url.endsWith(".ogg")) {
+        container.innerHTML =
+            `<audio controls autoplay style="width:100%">
+                <source src="${url}">
+             </audio>`;
+        return;
+    }
+
+    // === 3. Texto normal → busca no YouTube ===
+    const q = encodeURIComponent(input);
+    window.open(`https://www.youtube.com/results?search_query=${q}`, "_blank");
+}
+
+
+    // === Funcionalidade: Agenda (LocalStorage) ===
+    function getAgenda() {
+      return JSON.parse(localStorage.getItem('pandora_agenda')) || [];
+    }
+    function renderAgenda() {
+      const list = document.getElementById('agenda-list');
+      list.innerHTML = '';
+      const items = getAgenda();
+      items.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'agenda-item';
+        div.innerHTML = `${escapeHtml(item)} <button onclick="removeAgenda(${index})" style="float:right; padding:2px 5px; margin:0;">X</button>`;
+        list.appendChild(div);
+      });
+    }
+    function addAgendaItem() {
+      const input = document.getElementById('agenda-input');
+      if(!input.value) {
+        alert('Digite uma tarefa antes de adicionar.');
+        return;
+      }
+      const items = getAgenda();
+      items.push(input.value);
+      localStorage.setItem('pandora_agenda', JSON.stringify(items));
+      input.value = '';
+      renderAgenda();
+    }
+    function removeAgenda(index) {
+      const items = getAgenda();
+      items.splice(index, 1);
+      localStorage.setItem('pandora_agenda', JSON.stringify(items));
+      renderAgenda();
+    }
+    function clearAgenda() {
+        localStorage.removeItem('pandora_agenda');
+        renderAgenda();
+    }
+
+    // === Funcionalidade: Projetos (LocalStorage) ===
+    function getProjects() {
+      return JSON.parse(localStorage.getItem('pandora_projects')) || [];
+    }
+    function renderProjects() {
+      const list = document.getElementById('project-list');
+      list.innerHTML = '';
+      const items = getProjects();
+      items.forEach((proj, index) => {
+        const div = document.createElement('div');
+        div.className = 'project-item';
+        div.innerHTML = `<strong>${escapeHtml(proj.name)}</strong><br><small>${escapeHtml(proj.desc)}</small> <button onclick="removeProject(${index})" style="float:right; padding:2px 5px;">X</button>`;
+        list.appendChild(div);
+      });
+    }
+    function addProject() {
+      const name = document.getElementById('proj-name').value.trim();
+      const desc = document.getElementById('proj-desc').value.trim();
+      if(!name) {
+        alert('Digite o nome do projeto.');
+        return;
+      }
+      const items = getProjects();
+      items.push({ name, desc });
+      localStorage.setItem('pandora_projects', JSON.stringify(items));
+      document.getElementById('proj-name').value = '';
+      document.getElementById('proj-desc').value = '';
+      renderProjects();
+    }
+    function removeProject(index) {
+      const items = getProjects();
+      items.splice(index, 1);
+      localStorage.setItem('pandora_projects', JSON.stringify(items));
+      renderProjects();
+    }
+    function clearProjects() {
+        localStorage.removeItem('pandora_projects');
+        renderProjects();
+    }
+
+    // escape simple to avoid injection in innerHTML
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // === Funcionalidade: Games ===
+    let currentGame = '';
+    let rounds = 1;
+    let currentRound = 1;
+    let score = 0; // Simplificado
+
+    function loadGame(game) {
+      document.getElementById('game-menu').classList.add('hidden');
+      currentGame = game;
+      rounds = parseInt(document.getElementById('game-rounds').value) || 1;
+      currentRound = 1;
+      
+      if(game === 'velha') initTicTacToe();
+      if(game === 'adivinha') initGuess();
+      if(game === 'forca') initHangman();
+    }
+
+    function backToGameMenu() {
+      document.getElementById('game-menu').classList.remove('hidden');
+      document.getElementById('game-velha').classList.add('hidden');
+      document.getElementById('game-adivinha').classList.add('hidden');
+      document.getElementById('game-forca').classList.add('hidden');
+      // reset game states optionally
+      gameActive = false;
+    }
+
+    // -- Tic Tac Toe
+    let board = ['', '', '', '', '', '', '', '', ''];
+    let currentPlayer = 'X';
+    let gameActive = true;
+    function initTicTacToe() {
+      document.getElementById('game-velha').classList.remove('hidden');
+      board = ['', '', '', '', '', '', '', '', ''];
+      currentPlayer = 'X';
+      gameActive = true;
+      document.getElementById('tictac-status').innerText = `Vez de: ${currentPlayer}`;
+      renderTicTacBoard();
+    }
+    function renderTicTacBoard() {
+      const container = document.getElementById('tictac-board');
+      container.innerHTML = '';
+      board.forEach((cell, index) => {
+        const div = document.createElement('div');
+        div.className = 'tictac-cell';
+        div.innerText = cell;
+        div.onclick = () => playTicTac(index);
+        container.appendChild(div);
+      });
+    }
+    function playTicTac(index) {
+        if(board[index] !== '' || !gameActive) return;
+        board[index] = currentPlayer;
+        renderTicTacBoard();
+        checkTicTacWin();
+        if (gameActive) {
+          currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+          document.getElementById('tictac-status').innerText = `Vez de: ${currentPlayer}`;
+        }
+    }
+    function checkTicTacWin() {
+        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        let won = false;
+        wins.forEach(combo => {
+            if(board[combo[0]] && board[combo[0]] === board[combo[1]] && board[combo[0]] === board[combo[2]]) won = true;
+        });
+        if(won) {
+            document.getElementById('tictac-status').innerText = `Jogador ${currentPlayer} Venceu!`;
+            gameActive = false;
+        } else if(!board.includes('')) {
+            document.getElementById('tictac-status').innerText = `Empate!`;
+            gameActive = false;
+        }
+    }
+    function resetTicTacToe() { initTicTacToe(); }
+
+    // -- Adivinha
+    let targetNumber = 0;
+    function initGuess() {
+        document.getElementById('game-adivinha').classList.remove('hidden');
+        targetNumber = Math.floor(Math.random() * 100) + 1;
+        document.getElementById('guess-status').innerText = 'Tente adivinhar o número entre 1 e 100.';
+        document.getElementById('guess-input').value = '';
+    }
+    function checkGuess() {
+        const raw = document.getElementById('guess-input').value;
+        const val = parseInt(raw, 10);
+        const status = document.getElementById('guess-status');
+        if (isNaN(val)) {
+          status.innerText = 'Digite um número válido.';
+          return;
+        }
+        if(val === targetNumber) {
+          status.innerText = 'Acertou! Parabéns!';
+        } else if(val < targetNumber) {
+          status.innerText = 'Maior!';
+        } else {
+          status.innerText = 'Menor!';
+        }
+    }
+
+    // -- Forca
+    const words = ['CODIGO', 'PANDORA', 'JAVASCRIPT', 'HTML', 'FUTURO', 'INTERNET'];
+    let selectedWord = '';
+    let guessedLetters = [];
+    let hangmanLives = 6;
+    function initHangman() {
+        document.getElementById('game-forca').classList.remove('hidden');
+        selectedWord = words[Math.floor(Math.random() * words.length)];
+        guessedLetters = [];
+        hangmanLives = 6;
+        updateHangmanDisplay();
+    }
+    function updateHangmanDisplay() {
+        const display = selectedWord.split('').map(l => guessedLetters.includes(l) ? l : '_').join(' ');
+        document.getElementById('hangman-word').innerText = display;
+        document.getElementById('hangman-status').innerText = `Vidas: ${hangmanLives}`;
+        if(!display.includes('_')) document.getElementById('hangman-status').innerText = 'Você Venceu!';
+        if(hangmanLives <= 0) {
+            document.getElementById('hangman-status').innerText = `Perdeu! A palavra era ${selectedWord}`;
+            document.getElementById('hangman-word').innerText = selectedWord;
+        }
+    }
+    function guessLetter() {
+        const input = document.getElementById('hangman-input');
+        const letter = input.value.toUpperCase();
+        input.value = '';
+        if(!letter || guessedLetters.includes(letter) || hangmanLives <= 0) return;
+        guessedLetters.push(letter);
+        if(!selectedWord.includes(letter)) hangmanLives--;
+        updateHangmanDisplay();
+    }
+
+    // Inicialização
+    updateThemeToggleText();
+    const initialColorClass = body.className.split(' ').find(cls => cls && cls.startsWith('color-'));
+    const initialColor = initialColorClass ? initialColorClass.replace('color-', '') : 'blue';
+    updateActiveColorButton(initialColor);
+  </script>
+</body>
+</html>
