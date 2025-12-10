@@ -542,39 +542,56 @@
 
     // === Funcionalidade: Pesquisa & Book ===
     function performSearch() {
-      const engine = document.getElementById('search-engine').value;
-      const rawQuery = document.getElementById('search-query').value.trim();
-      if (!rawQuery) {
+    const engine = document.getElementById('search-engine').value;
+    const rawQuery = document.getElementById('search-query').value.trim();
+    
+    if (!rawQuery) {
         alert('Digite algo para pesquisar.');
         return;
-      }
-      const q = encodeURIComponent(rawQuery);
-      let url = '';
-      if (engine === 'google') {
-        url = `https://www.google.com/search?q=${q}`;
-      } else if (engine === 'youtube') {
-        // se o user colou um link do YouTube, abre direto
-        if (rawQuery.includes('youtube.com') || rawQuery.includes('youtu.be')) {
-          url = rawQuery;
-        } else {
-          url = `https://www.youtube.com/results?search_query=${q}`;
-        }
-      }else if (engine === 'tiktok') {
+    }
+
     const q = encodeURIComponent(rawQuery);
 
-    // Abre como hashtag no próprio TikTok (melhor tentativa)
-    const tagUrl = `https://www.tiktok.com/tag/${q}`;
-    const win = window.open(tagUrl, "_blank");
-
-    // Fallback garantido caso o TikTok bloqueie a abertura da busca
-    setTimeout(() => {
-        if (!win || win.closed) {
-            window.open(`https://www.google.com/search?q=${q}+site:tiktok.com`, "_blank");
-        }
-    }, 800);
-      }
-      
+    // --- GOOGLE ---
+    if (engine === 'google') {
+        const url = `https://www.google.com/search?q=${q}`;
+        window.open(url, "_blank");
+        return;
     }
+
+    // --- YOUTUBE ---
+    if (engine === 'youtube') {
+        let url;
+        
+        // Se for link do YouTube, abre direto
+        if (rawQuery.includes("youtube.com") || rawQuery.includes("youtu.be")) {
+            url = rawQuery.startsWith("http") ? rawQuery : "https://" + rawQuery;
+        } else {
+            url = `https://www.youtube.com/results?search_query=${q}`;
+        }
+        
+        window.open(url, "_blank");
+        return;
+    }
+
+    // --- TIKTOK ---
+    if (engine === 'tiktok') {
+
+        // tentativa 1 → abrir como hashtag
+        const tagUrl = `https://www.tiktok.com/tag/${q}`;
+        const win = window.open(tagUrl, "_blank");
+
+        // fallback garantido → Google mostrando só TikTok
+        setTimeout(() => {
+            if (!win || win.closed) {
+                window.open(`https://www.google.com/search?q=${q}+site:tiktok.com`, "_blank");
+            }
+        }, 800);
+
+        return;
+    }
+                  }
+                
 
     function searchBook() {
     const query = document.getElementById('book-query').value.trim();
